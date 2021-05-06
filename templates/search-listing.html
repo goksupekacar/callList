@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Alotech | Search Result</title>
+    <link href="static/css/styles.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+<!--navbar-->
+<nav class="navbar">
+    <span class="navbar-toggle" id="js-navbar-toggle">
+            <i class="fas fa-bars"></i>
+        </span>
+    <a href="{% url 'home' %}" class="logo">Alotech |</a>
+</nav>
+<div class="table-responsive">
+    <table id="veri" class="table table-sm">
+        <thead>
+        <tr>
+            <th>Call Date</th>
+            <th>Called Num</th>
+            <th>Caller Id</th>
+            <th>Answered</th>
+            <th>Duration</th>
+        </tr>
+        </thead>
+
+        {% for x in call_list %}
+            <tr>
+                <td>
+
+                    <button type="button" id="{{ x.id }}" class="btn btn-dark call-button">
+                        {{ x.calldate }}
+                    </button>
+                </td>
+                <td>{{ x.called_num }}</td>
+                <td>{{ x.callKey }}</td>
+                <td>{{ x.answered }}</td>
+                <td>{{ x.duration }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+</div>
+    <form method="post" >{% csrf_token %}</form>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exampleModalLabel">Search Detail</h3>
+            </div>
+            <div class="modal-body">
+                <label for="callDate"><h3>Call Date:</h3></label>
+                <input class= "input-box" id="callDate" readonly><br>
+
+                <label for="callNumber"><h3>Call Number:</h3></label>
+                <input class= "input-box" id="callNumber" readonly><br>
+
+                <label for="callId"><h3>Call Id:</h3></label>
+                <input class= "input-box" id="callId" readonly><br>
+
+                <label for="duration"><h3>Duration:</h3></label>
+                <input class= "input-box" id="duration" readonly><br>
+
+                <label for="answered"><h3>Answered:</h3></label>
+                <input class= "input-box" id="answered" readonly><br>
+
+                 <label for="answered"><h3>Campaign Name:</h3></label>
+                <input class= "input-box" id="campaign_name" readonly><br>
+
+                 <label for="answered"><h3>Voice Email:</h3></label>
+                <input class= "input-box" id="voicemail" readonly><br>
+
+                 <label for="answered"><h3>Channel:</h3></label>
+                <input class= "input-box" id="channel" readonly><br>
+
+                 <label for="answered"><h3>Agent:</h3></label>
+                <input class= "input-box" id="agent" readonly><br>
+
+            </div>
+          <button class="button" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#veri").DataTable({
+            language: {
+                "url": "http://cdn.datatables.net/plug-ins/1.10.19/i18n/Turkish.json"
+            }
+        });
+    });
+</script>
+<script>
+    $(".call-button").on("click", function () {
+        let callId = $(this).attr("id");
+        let ajaxMap = {};
+            ajaxMap["csrfmiddlewaretoken"] = $('input[name="csrfmiddlewaretoken"]').val();
+            ajaxMap["get-call-info"] = 'True';
+            ajaxMap["call-id"] = callId;
+
+            $.ajax({
+                url: "{% url 'search-listing' %}",
+                type: "POST",
+                data: ajaxMap,
+                statusCode: {
+                    400: function (json) {
+                        console.log(json.responseJSON.error);
+                    },
+                    500: function (json) {
+                        console.log("Ops! Something went wrong.");
+                    },
+                },
+                success: function (json) {
+                    let callDate =  json["call-date"]
+                    let callNum =  json["call-num"]
+                    let callId =  json["call-Id"]
+                    let duration =  json["duration"]
+                    let answered =  json["answered"]
+                    let campaign_name =  json["campaign_name"]
+                    let voicemail =  json["voicemail"]
+                    let channel =  json["channel"]
+                    let agent =  json["agent"]
+
+
+                    console.log(callDate,callNum,callId,duration,answered,campaign_name,voicemail,channel,agent)
+                    $('#callId').val(callId)
+                    $('#callDate').val(callDate)
+                    $('#callNumber').val(callNum)
+                    $('#duration').val(duration)
+                    $('#answered').val(answered)
+                    $('#campaign_name').val(campaign_name)
+                    $('#voicemail').val(voicemail)
+                    $('#channel').val(channel)
+                    $('#agent').val(agent)
+                    $("#exampleModal").modal();
+                }
+            });
+    })
+</script>
+</body>
+</html>

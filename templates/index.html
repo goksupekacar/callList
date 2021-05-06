@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Alotech |Search</title>
+    <link href="static/css/styles.css" rel="stylesheet"/>
+</head>
+<body>
+<!--navbar-->
+<nav class="navbar">
+    <span class="navbar-toggle" id="js-navbar-toggle">
+            <i class="fas fa-bars"></i>
+        </span>
+    <a href="{% url 'home' %}" class="logo">Alotech |</a>
+</nav>
+
+
+    <div id="container">
+        <h2>
+            <center>Search Call-List</center>
+        </h2>
+        <form action="{% url 'search-listing' %}" method="POST">
+             {% csrf_token %}
+            <p>Please Choose Call Date:
+                <input type="date" id="call-date" name="Call-date"></p>
+            <p>Please Choose Hang Date:
+                <input type="date" id="hang-date" name="Hang-date"></p>
+
+            <button class="button" type="submit">Search</button>
+
+        </form>
+    </div>
+</body>
+</html>
